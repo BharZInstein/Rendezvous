@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rendezvous/components/navigationbar.dart';
+import 'package:rendezvous/components/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rendezvous/components/homepage.dart';
 
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
+
       home: Homepage(),
     );
   }
