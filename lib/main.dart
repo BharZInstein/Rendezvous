@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rendezvous/components/Bookingsite.dart';
 import 'package:rendezvous/components/navigationbar.dart';
 import 'package:rendezvous/components/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
 
-      home: Homepage(),
+      home: BookingPage(),
     );
   }
 }
