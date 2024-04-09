@@ -1,9 +1,77 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rendezvous/components/homepage.dart';
 
 import '../Utils/colors.dart'; // Import your colors file
 
-class SignIn extends StatelessWidget {
-  const SignIn({super.key});
+class SignIn extends StatefulWidget {
+  @override
+  _SignInState createState() => _SignInState();
+}
+class _SignInState extends State<SignIn> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Homepage(user: user,)),
+        );
+      }
+    });
+  }
+
+  Future<void> _checkAndCreateUserDocument(User user) async {
+    DocumentSnapshot userDoc =
+    await _firestore.collection('users').doc(user.uid).get();
+
+    if (!userDoc.exists) {
+      await _firestore.collection('users').doc(user.uid).set({
+        'favorites': [],
+      });
+    }
+  }
+
+
+
+  Future<UserCredential> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        throw FirebaseAuthException(
+          code: 'sign_in_canceled',
+          message: 'Google Sign-In was canceled by the user.',
+        );
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+      await _auth.signInWithCredential(credential);
+
+      // Check and create user document in Firestore
+      await _checkAndCreateUserDocument(userCredential.user!);
+
+      return userCredential;
+    } catch (e) {
+      print("Error during Google Sign-In: $e");
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,27 +114,32 @@ class SignIn extends StatelessWidget {
                   children: [
                     // Sign In button with centered text and slightly shifted icon
                     SizedBox(height: size.height * 0.05),
-                    Container(
-                      width: size.width,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                        color: buttonColor, // Define color in a separate file
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center, // Center the text
-                        children: [
-                          Text(
-                            "Sign In",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 22, // Adjust font size if needed
+                    InkWell(
+                      onTap: () async {
+                        UserCredential userCredential = await _signInWithGoogle();
+                      },
+                      child: Container(
+                        width: size.width,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        decoration: BoxDecoration(
+                          color: buttonColor, // Define color in a separate file
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center, // Center the text
+                          children: [
+                            Text(
+                              "Sign In",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 22, // Adjust font size if needed
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 15), // Shift the icon slightly to the left
-                          socialIcon("images/google.png", height: 18),
-                        ],
+                            const SizedBox(width: 15), // Shift the icon slightly to the left
+                            socialIcon("images/google.png", height: 18),
+                          ],
+                        ),
                       ),
                     ),
                     // ... other widgets (unchanged)

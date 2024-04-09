@@ -83,7 +83,7 @@ class MySplashScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SignIn(),
+                                builder: (context) => SignIn(),
                               ),
                             );
                           },
