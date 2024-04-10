@@ -62,8 +62,6 @@ class _BookingPageState extends State<BookingPage> {
   }
 }
 
-// Rest of the code remains the same
-
 class BookingSlot extends StatelessWidget {
   const BookingSlot({Key? key}) : super(key: key);
 
@@ -460,7 +458,6 @@ class _NumberOfPlayersWidgetState extends State<NumberOfPlayersWidget> {
     );
   }
 }
-
 
 
 class ContactWidget extends StatefulWidget {

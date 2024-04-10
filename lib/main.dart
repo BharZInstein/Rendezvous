@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rendezvous/components/Bookingsite.dart';
 import 'package:rendezvous/components/navigationbar.dart';
 import 'package:rendezvous/components/settings.dart';
@@ -13,6 +14,9 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -33,7 +37,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
 
-      home: SignIn(),
+      home: MySplashScreen(),
     );
   }
 }
