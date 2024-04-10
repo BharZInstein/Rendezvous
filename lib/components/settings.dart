@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
 class AccountPage extends StatefulWidget {
-  const AccountPage ( {Key}) ;
+  final User user;
+  const AccountPage ( {Key, required this.user}) ;
 
   @override
   _AccountPageState createState() => _AccountPageState();
@@ -33,7 +34,8 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
   Widget userTile(){
-    String url = "https://cdn.pixabay.com/photo/2020/08/29/16/08/pikachu-5527377_1280.jpg";
+    String url = widget.user.photoURL!;
+
     return Center(
       child: ListTile(
       leading: CircleAvatar(
@@ -57,9 +59,9 @@ class _AccountPageState extends State<AccountPage> {
   Widget colorTiles(){
     return Column(
       children: [
-        colorTile(Icons.person_outline,Colors.deepPurple,"Name"),
+        colorTile(Icons.person_outline,Colors.deepPurple,"${widget.user.displayName}"),
         SizedBox(height: 35),
-        colorTile(Icons.mail,Colors.blue,"Email"),
+        colorTile(Icons.mail,Colors.blue,"${widget.user.email}"),
         SizedBox(height: 35),
         colorTile(Icons.tag,Colors.pink,"RegNo"),
         //colorTile(Icons.dark_mode,Colors.orange,"Theme")
@@ -116,7 +118,22 @@ class _AccountPageState extends State<AccountPage> {
          }
      ));
    }
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      print('User signed out successfully.');
+    } catch (e) {
+      print("Error signing out: $e");
+    }
+  }
+
   Widget Logout(){
-    return ElevatedButton(onPressed: () => {}, child: Text("Logout"));
+    return ElevatedButton(onPressed: () => {
+      signOut(),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MySplashScreen()),
+      )
+    }, child: Text("Logout"));
   }
 }

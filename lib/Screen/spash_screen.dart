@@ -51,7 +51,7 @@ class MySplashScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 25),
                     Text(
-                      "Explore all the most exciting job roles\nbased on your interest and study major",
+                      "Find and book playgrounds, classrooms and equipments for every adventure",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,

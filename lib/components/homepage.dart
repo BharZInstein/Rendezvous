@@ -2,6 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:rendezvous/components/Bookingsite.dart';
+import 'package:rendezvous/components/navigationbar.dart';
+import 'package:rendezvous/components/settings.dart';
 
 import 'eventcard.dart';
 
@@ -62,6 +65,7 @@ class _HomepageState extends State<Homepage> {
         appBar: AppBar(
           title: Text('Rendezvous'),
         ),
+        // bottomNavigationBar: navigationMenu(),
         body: SingleChildScrollView(
           // Wrap content with SingleChildScrollView
           child: Padding(
@@ -132,7 +136,20 @@ class _HomepageState extends State<Homepage> {
                           )
                         ],
                       ),
-                    ])
+                    ]),
+                ElevatedButton(onPressed: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AccountPage(user: widget.user)),
+                  );
+                }, child: Text("settings")),
+                ElevatedButton(onPressed: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookingPage()),
+                  );
+                }, child: Text("booking"))
+
               ],
             ),
           ),
