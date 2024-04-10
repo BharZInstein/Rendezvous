@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rendezvous/Screen/spash_screen.dart';
+
+import 'Bookingsite.dart';
+import 'homepage.dart';
 class AccountPage extends StatefulWidget {
   final User user;
   const AccountPage ( {Key, required this.user}) ;
@@ -14,10 +17,27 @@ class _AccountPageState extends State<AccountPage> {
   bool light = true;
   @override
   Widget build(BuildContext context ) {
-    return Material(
-      color: Color(0xffffffff),
+    return Scaffold(
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(onPressed: () => {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage(user: widget.user)))
+            }, icon: Icon(Icons.home)
+            ),
+            IconButton(onPressed: () => {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => BookingPage(user: widget.user)))
+            }, icon: Icon(Icons.add)),
+            IconButton(onPressed: () => {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPage(user: widget.user)))
+            }, icon: Icon(Icons.face, color: Theme.of(context).colorScheme.primary))
+          ],
+        ),
+      ),
       //this represents the background colour , can change
-      child: ListView(
+      body: ListView(
         padding: EdgeInsets.all(12),
         physics: BouncingScrollPhysics(),
         children: [

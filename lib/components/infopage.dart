@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
 
-class InformationPage extends StatelessWidget {
-  final String title;
-  final String ground;
-  final String time;
-  final String date;
-  final String numPlayers;
-  final String equipment;
+import '../event.dart';
 
-  InformationPage({
-    required this.title,
-    required this.ground,
-    required this.time,
-    required this.date,
-    required this.numPlayers,
-    required this.equipment,
-  });
+class InformationPage extends StatelessWidget {
+  final Event event;
+
+  InformationPage({required this.event});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(event.title), // Use event.title for the title
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('Ground', ground),
-            _buildInfoRow('Time', time),
-            _buildInfoRow('Date', date),
-            _buildInfoRow('No. of Players', numPlayers),
-            _buildInfoRow('Equipment', equipment),
+            _buildInfoRow('Title', event.title),
+            _buildInfoRow('Date', event.date),
+            _buildInfoRow('Start Time', event.startTime),
+            _buildInfoRow('End Time', event.endTime),
+            _buildInfoRow('Area', event.area),
+            _buildInfoRow('Equipment', event.equipment),
+            _buildInfoRow('Players', event.players.toString()), // Convert players to string
+            _buildInfoRow('Contact Info', event.contactInfo),
+            _buildInfoRow('Creator Name', event.creatorName),
+            _buildInfoRow('Creator Email', event.creatorEmail),
           ],
         ),
       ),

@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rendezvous/components/settings.dart';
+
+import 'homepage.dart';
 
 class BookingPage extends StatefulWidget {
   final User user;
@@ -38,7 +41,8 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   void _handleScroll() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       FocusScope.of(context).requestFocus(FocusNode());
     }
@@ -49,6 +53,42 @@ class _BookingPageState extends State<BookingPage> {
     String eventId;
     Map<String, Object?> eventData;
     return Scaffold(
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              onPressed: () => {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Homepage(user: widget.user)))
+              },
+              icon: Icon(Icons.home),
+            ),
+            IconButton(
+              onPressed: () => {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BookingPage(user: widget.user)))
+              },
+              icon: Icon(Icons.add),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            IconButton(
+                onPressed: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AccountPage(user: widget.user)))
+                    },
+                icon: Icon(Icons.face))
+          ],
+        ),
+      ),
       key: _scaffoldKey,
       body: ListView(
         controller: _scrollController,
@@ -71,42 +111,49 @@ class _BookingPageState extends State<BookingPage> {
           const SizedBox(height: 16.0),
           const SizedBox(height: 16.0),
           _buildContactInfo(context),
-          ElevatedButton(onPressed: () async => {
-             eventId = DateTime.now().millisecondsSinceEpoch.toString(),
-
-             eventData = {
-              'date': _selectedDate,
-              'start_time': "${_selectedStartTime!.hour}:${_selectedStartTime!.minute}",
-              'end_time': "${_selectedEndTime!.hour}:${_selectedEndTime!.minute}",
-              'event_name': _eventName,
-              'area': _selectedArea,
-              'equipment': _selectedEquipment,
-               'players': _selectedPlayers,
-              'contactInfo': _contactInfo,
-               'creator_name': widget.user.displayName,
-               'creator_email': widget.user.email
-            },
-
-        await _firestore.collection('events').doc(eventId).set(eventData),
-
-
-  }, child: Text("Create Event"))
+          ElevatedButton(
+              onPressed: () async => {
+                    eventId = DateTime.now().millisecondsSinceEpoch.toString(),
+                    eventData = {
+                      'date':
+                          "${_selectedDate?.day} ${_selectedDate?.month}, ${_selectedDate?.year}",
+                      'start_time':
+                          "${_selectedStartTime!.hour}:${_selectedStartTime!.minute}",
+                      'end_time':
+                          "${_selectedEndTime!.hour}:${_selectedEndTime!.minute}",
+                      'event_name': _eventName,
+                      'area': _selectedArea,
+                      'equipment': _selectedEquipment,
+                      'players': _selectedPlayers,
+                      'contactInfo': _contactInfo,
+                      'creator_name': widget.user.displayName,
+                      'creator_email': widget.user.email
+                    },
+                    await _firestore
+                        .collection('events')
+                        .doc(eventId)
+                        .set(eventData),
+                  },
+              child: Text("Create Event"))
         ],
       ),
     );
   }
+
   Widget _buildBookingSlot() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          Icon(Icons.add_circle, color: Theme.of(context).colorScheme.primary, size: 32.0),
+          Icon(Icons.add_circle,
+              color: Theme.of(context).colorScheme.primary, size: 32.0),
           const SizedBox(width: 16.0),
           const Text('New Booking Slot'),
         ],
       ),
     );
   }
+
   void _showDatePicker() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -143,7 +190,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.calendar_today,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text('Date'),
             ],
@@ -156,9 +204,10 @@ class _BookingPageState extends State<BookingPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            child: Text(_selectedDate != null
-                ? '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}'
-                : 'Select Date',
+            child: Text(
+              _selectedDate != null
+                  ? '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}'
+                  : 'Select Date',
               style: Theme.of(context).primaryTextTheme.labelMedium,
             ),
           ),
@@ -166,6 +215,7 @@ class _BookingPageState extends State<BookingPage> {
       ),
     );
   }
+
   void _showTimePicker() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -191,6 +241,7 @@ class _BookingPageState extends State<BookingPage> {
       });
     }
   }
+
   void _showEndTimePicker() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -227,7 +278,8 @@ class _BookingPageState extends State<BookingPage> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.play_circle_fill_rounded, color: Theme.of(context).colorScheme.primary, size: 24.0),
+                  Icon(Icons.play_circle_fill_rounded,
+                      color: Theme.of(context).colorScheme.primary, size: 24.0),
                   const SizedBox(width: 8.0),
                   const Text('Start'),
                 ],
@@ -240,13 +292,13 @@ class _BookingPageState extends State<BookingPage> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: Text(_selectedStartTime != null
-                    ? '${_selectedStartTime!.hour}:${_selectedStartTime!.minute.toString().padLeft(2, '0')}'
-                    : 'Select Time',
-                  style: Theme.of(context).primaryTextTheme.labelMedium
-                  ,),
+                child: Text(
+                  _selectedStartTime != null
+                      ? '${_selectedStartTime!.hour}:${_selectedStartTime!.minute.toString().padLeft(2, '0')}'
+                      : 'Select Time',
+                  style: Theme.of(context).primaryTextTheme.labelMedium,
+                ),
               ),
-              
             ],
           ),
           Row(
@@ -254,7 +306,8 @@ class _BookingPageState extends State<BookingPage> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.stop_circle, color: Theme.of(context).colorScheme.primary, size: 24.0),
+                  Icon(Icons.stop_circle,
+                      color: Theme.of(context).colorScheme.primary, size: 24.0),
                   const SizedBox(width: 8.0),
                   const Text('End'),
                 ],
@@ -267,19 +320,20 @@ class _BookingPageState extends State<BookingPage> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: Text(_selectedEndTime != null
-                    ? '${_selectedEndTime!.hour}:${_selectedEndTime!.minute.toString().padLeft(2, '0')}'
-                    : 'Select Time',
-                  style: Theme.of(context).primaryTextTheme.labelMedium
-                  ,),
+                child: Text(
+                  _selectedEndTime != null
+                      ? '${_selectedEndTime!.hour}:${_selectedEndTime!.minute.toString().padLeft(2, '0')}'
+                      : 'Select Time',
+                  style: Theme.of(context).primaryTextTheme.labelMedium,
+                ),
               ),
-
             ],
           )
         ],
       ),
     );
   }
+
   Widget _buildEventName(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -288,7 +342,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.event, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.event,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text(''),
             ],
@@ -310,6 +365,7 @@ class _BookingPageState extends State<BookingPage> {
       ),
     );
   }
+
   final List<String> _areas = ['AB1', 'AB2', 'A block', 'B block'];
 
   void _showAreaPicker() {
@@ -322,14 +378,14 @@ class _BookingPageState extends State<BookingPage> {
             child: Column(
               children: _areas
                   .map((area) => ListTile(
-                title: Text(area),
-                onTap: () {
-                  setState(() {
-                    _selectedArea = area;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ))
+                        title: Text(area),
+                        onTap: () {
+                          setState(() {
+                            _selectedArea = area;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ))
                   .toList(),
             ),
           ),
@@ -337,6 +393,7 @@ class _BookingPageState extends State<BookingPage> {
       },
     );
   }
+
   Widget _buildAreaPicker(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -345,7 +402,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.location_on,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text('Area'),
             ],
@@ -358,12 +416,14 @@ class _BookingPageState extends State<BookingPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            child: Text(_selectedArea ?? 'Select Area',style: Theme.of(context).primaryTextTheme.labelMedium),
+            child: Text(_selectedArea ?? 'Select Area',
+                style: Theme.of(context).primaryTextTheme.labelMedium),
           ),
         ],
       ),
     );
   }
+
   final List<String> _equipments = ['Yes', 'No'];
 
   void _showEquipmentsPicker() {
@@ -376,14 +436,14 @@ class _BookingPageState extends State<BookingPage> {
             child: Column(
               children: _equipments
                   .map((equipment) => ListTile(
-                title: Text(equipment),
-                onTap: () {
-                  setState(() {
-                    _selectedEquipment = equipment;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ))
+                        title: Text(equipment),
+                        onTap: () {
+                          setState(() {
+                            _selectedEquipment = equipment;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ))
                   .toList(),
             ),
           ),
@@ -400,7 +460,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.shopping_cart,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text('Equipments'),
             ],
@@ -413,12 +474,14 @@ class _BookingPageState extends State<BookingPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            child: Text(_selectedEquipment ?? 'Select Equipment',style: Theme.of(context).primaryTextTheme.labelMedium),
+            child: Text(_selectedEquipment ?? 'Select Equipment',
+                style: Theme.of(context).primaryTextTheme.labelMedium),
           ),
         ],
       ),
     );
   }
+
   final List<int> _players = List.generate(4, (index) => index + 1);
 
   void _showPlayersPicker() {
@@ -431,14 +494,14 @@ class _BookingPageState extends State<BookingPage> {
             child: Column(
               children: _players
                   .map((player) => ListTile(
-                title: Text('$player'),
-                onTap: () {
-                  setState(() {
-                    _selectedPlayers = player;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ))
+                        title: Text('$player'),
+                        onTap: () {
+                          setState(() {
+                            _selectedPlayers = player;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ))
                   .toList(),
             ),
           ),
@@ -455,7 +518,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.person,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text('Number of Players'),
             ],
@@ -468,7 +532,11 @@ class _BookingPageState extends State<BookingPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            child: Text(_selectedPlayers != null ? '$_selectedPlayers' : 'Select Players',style: Theme.of(context).primaryTextTheme.labelMedium),
+            child: Text(
+                _selectedPlayers != null
+                    ? '$_selectedPlayers'
+                    : 'Select Players',
+                style: Theme.of(context).primaryTextTheme.labelMedium),
           ),
         ],
       ),
@@ -483,7 +551,8 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.contact_phone, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              Icon(Icons.contact_phone,
+                  color: Theme.of(context).colorScheme.primary, size: 24.0),
               const SizedBox(width: 8.0),
               const Text(''),
             ],

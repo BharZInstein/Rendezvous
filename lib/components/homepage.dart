@@ -1,46 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rendezvous/components/Bookingsite.dart';
-import 'package:rendezvous/components/navigationbar.dart';
 import 'package:rendezvous/components/settings.dart';
 
+import '../event.dart';
 import 'eventcard.dart';
-
-class Event {
-  final String title;
-  final String description;
-
-  const Event(this.title, this.description);
-}
-
-List<Event> getEvents() {
-  return [
-    Event("Cookoff", "Bring out your inner chef"),
-    Event("Hackathon", "Code your way"),
-    Event("TT", "Play your soul"),
-  ];
-}
-
-Widget generateEventCard(
-    String title, String description, BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge
-            ?.copyWith(fontWeight: FontWeight.w500, letterSpacing: 0.9),
-      ),
-      SizedBox(height: 4),
-      Entry(Icons.schedule, "9:00 - 10:00 AM", context),
-      Divider()
-    ],
-  );
-}
+import 'navigationbar.dart';
 
 class Homepage extends StatefulWidget {
 
@@ -51,21 +19,60 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  List<Event> events = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getEventsData();
+  }
+
+  Future<void> _getEventsData() async {
+    try {
+      final collectionRef = _firestore.collection('events');
+
+      // Fetch all documents using getDocs()
+      final querySnapshot = await collectionRef.get();
+
+      // Convert each document snapshot to an Event object
+      setState(() {
+        events = querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      });
+
+
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Event> events = getEvents();
-    List<Widget> eventCards = [];
-    for (var event in events) {
-      eventCards
-          .add(generateEventCard(event.title, event.description, context));
-    }
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text('Rendezvous'),
         ),
-        // bottomNavigationBar: navigationMenu(),
+        bottomNavigationBar: BottomAppBar(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(onPressed: () => {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage(user: widget.user)))
+                }, icon: Icon(Icons.home),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                IconButton(onPressed: () => {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => BookingPage(user: widget.user)))
+                }, icon: Icon(Icons.add)),
+                IconButton(onPressed: () => {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPage(user: widget.user)))
+                }, icon: Icon(Icons.face))
+              ],
+            ),
+        ),
         body: SingleChildScrollView(
           // Wrap content with SingleChildScrollView
           child: Padding(
@@ -109,8 +116,9 @@ class _HomepageState extends State<Homepage> {
                 Row(
                   children: [
                     Expanded(
-                      child: EventCard(),
+                      child: events.length == 0 ? Text("Loading") : EventCard(event: events[0]),
                     ),
+
                   ],
                 ),
                 SizedBox(height: 25),
@@ -119,37 +127,29 @@ class _HomepageState extends State<Homepage> {
                   child: Label(Icons.event_note, " Followed by", context),
                 ),
                 Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: eventCards,
-                                ),
-                              ),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true, // Prevent the card from expanding unnecessarily
+                              itemCount: events.length, // Replace with your array length
+                              itemBuilder: (context, index) {
+                                final card = events[index]; // Access each card object
+                                // Replace this with your card's content based on the card data
+                                return EventCard(event: card,);
+                              },
                             ),
-                          )
-                        ],
-                      ),
-                    ]),
-                ElevatedButton(onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AccountPage(user: widget.user)),
-                  );
-                }, child: Text("settings")),
-                ElevatedButton(onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookingPage(user: widget.user,)),
-                  );
-                }, child: Text("booking"))
-
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
