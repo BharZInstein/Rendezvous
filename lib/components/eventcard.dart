@@ -9,6 +9,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 10.0,
       child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -49,23 +50,24 @@ class EventCard extends StatelessWidget {
     );
   }
 
-  Widget Entry(IconData iconData, String text, BuildContext context) {
-    TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: Theme.of(context).colorScheme.secondary,
-        );
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        Icon(
-          iconData,
-          size: textStyle.fontSize!,
-          color: textStyle.color,
-        ),
-        Text(
-          text,
-          style: textStyle,
-        ),
-      ],
-    );
-  }
+
+}
+Widget Entry(IconData iconData, String text, BuildContext context) {
+  TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+    color: Theme.of(context).colorScheme.secondary,
+  );
+  return Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      Icon(
+        iconData,
+        size: textStyle.fontSize!,
+        color: textStyle.color,
+      ),
+      Text(
+        text,
+        style: textStyle,
+      ),
+    ],
+  );
 }
