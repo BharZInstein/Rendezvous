@@ -1,8 +1,5 @@
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rendezvous/Screen/sign_in.dart';
-import 'package:rendezvous/Screen/spash_screen.dart';
 class AccountPage extends StatefulWidget {
   final User user;
   const AccountPage ( {Key, required this.user}) ;

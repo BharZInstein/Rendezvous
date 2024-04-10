@@ -8,11 +8,35 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_handleScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _handleScroll() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      FocusScope.of(context).requestFocus(FocusNode());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white, // Background color
-      child: ListView(
+    return Scaffold(
+      key: _scaffoldKey,
+      body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(16.0),
         physics: const BouncingScrollPhysics(),
         children: [
@@ -30,7 +54,6 @@ class _BookingPageState extends State<BookingPage> {
           const SizedBox(height: 16.0),
           const NumberOfPlayersWidget(),
           const SizedBox(height: 16.0),
-          const RegistrationNumberWidget(),
           const SizedBox(height: 16.0),
           const ContactWidget(),
         ],
@@ -44,14 +67,14 @@ class BookingSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: const Text('New Booking Slot'),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Icon(Icons.add_circle, color: Theme.of(context).colorScheme.primary, size: 32.0),
+          const SizedBox(width: 16.0),
+          const Text('New Booking Slot'),
+        ],
       ),
     );
   }
@@ -97,31 +120,33 @@ class _DateWidgetState extends State<DateWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Date'),
-            ElevatedButton(
-              onPressed: _showDatePicker,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text('Date'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: _showDatePicker,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(_selectedDate != null
-                  ? '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}'
-                  : 'Select Date'),
             ),
-          ],
-        ),
+            child: Text(_selectedDate != null
+                ? '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}'
+                : 'Select Date',
+              style: Theme.of(context).primaryTextTheme.labelMedium,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -165,31 +190,33 @@ class _DurationWidgetState extends State<DurationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Duration'),
-            ElevatedButton(
-              onPressed: _showTimePicker,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.access_time, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text('Duration'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: _showTimePicker,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(_selectedTime != null
-                  ? '${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
-                  : 'Select Time'),
             ),
-          ],
-        ),
+            child: Text(_selectedTime != null
+                ? '${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
+                : 'Select Time',
+            style: Theme.of(context).primaryTextTheme.labelMedium
+              ,),
+          ),
+        ],
       ),
     );
   }
@@ -205,27 +232,27 @@ class EventNameWidget extends StatefulWidget {
 class _EventNameWidgetState extends State<EventNameWidget> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Name of Event'),
-            Expanded(
-              child: TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter event name',
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.event, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text(''),
+            ],
+          ),
+          Expanded(
+            child: TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter event name',
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -270,29 +297,29 @@ class _AreaWidgetState extends State<AreaWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Area'),
-            ElevatedButton(
-              onPressed: _showAreaPicker,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text('Area'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: _showAreaPicker,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(_selectedArea ?? 'Select Area'),
             ),
-          ],
-        ),
+            child: Text(_selectedArea ?? 'Select Area',style: Theme.of(context).primaryTextTheme.labelMedium),
+          ),
+        ],
       ),
     );
   }
@@ -337,29 +364,29 @@ class _EquipmentsWidgetState extends State<EquipmentsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Equipments'),
-            ElevatedButton(
-              onPressed: _showEquipmentsPicker,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text('Equipments'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: _showEquipmentsPicker,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(_selectedEquipment ?? 'Select Equipment'),
             ),
-          ],
-        ),
+            child: Text(_selectedEquipment ?? 'Select Equipment',style: Theme.of(context).primaryTextTheme.labelMedium),
+          ),
+        ],
       ),
     );
   }
@@ -404,69 +431,34 @@ class _NumberOfPlayersWidgetState extends State<NumberOfPlayersWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Number of Players'),
-            ElevatedButton(
-              onPressed: _showPlayersPicker,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text('Number of Players'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: _showPlayersPicker,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(_selectedPlayers != null ? '$_selectedPlayers' : 'Select Players'),
             ),
-          ],
-        ),
+            child: Text(_selectedPlayers != null ? '$_selectedPlayers' : 'Select Players',style: Theme.of(context).primaryTextTheme.labelMedium),
+          ),
+        ],
       ),
     );
   }
 }
 
-class RegistrationNumberWidget extends StatefulWidget {
-  const RegistrationNumberWidget({Key? key}) : super(key: key);
-
-  @override
-  _RegistrationNumberWidgetState createState() => _RegistrationNumberWidgetState();
-}
-
-class _RegistrationNumberWidgetState extends State<RegistrationNumberWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Registration Number'),
-            Expanded(
-              child: TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter registration number',
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ContactWidget extends StatefulWidget {
   const ContactWidget({Key? key}) : super(key: key);
@@ -478,27 +470,27 @@ class ContactWidget extends StatefulWidget {
 class _ContactWidgetState extends State<ContactWidget> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Contact'),
-            Expanded(
-              child: TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter contact information',
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.contact_phone, color: Theme.of(context).colorScheme.primary, size: 24.0),
+              const SizedBox(width: 8.0),
+              const Text(''),
+            ],
+          ),
+          Expanded(
+            child: TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter contact information',
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
