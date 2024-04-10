@@ -34,7 +34,7 @@ class _SignInState extends State<SignIn> {
 
     if (!userDoc.exists) {
       await _firestore.collection('users').doc(user.uid).set({
-        'favorites': [],
+        'email': user.email,
       });
     }
   }

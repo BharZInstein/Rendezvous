@@ -1,5 +1,8 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rendezvous/Screen/spash_screen.dart';
 class AccountPage extends StatefulWidget {
   final User user;
   const AccountPage ( {Key, required this.user}) ;
@@ -121,6 +124,7 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
+      await GoogleSignIn.games().signOut();
       print('User signed out successfully.');
     } catch (e) {
       print("Error signing out: $e");

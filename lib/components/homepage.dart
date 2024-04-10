@@ -89,7 +89,7 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                       Text(
-                        "Abhinav",
+                        widget.user.displayName!.split(' ')[0],
                         style:
                         Theme.of(context).textTheme.displayMedium?.copyWith(
                           letterSpacing: 2.5,
@@ -146,7 +146,7 @@ class _HomepageState extends State<Homepage> {
                 ElevatedButton(onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => BookingPage()),
+                    MaterialPageRoute(builder: (context) => BookingPage(user: widget.user,)),
                   );
                 }, child: Text("booking"))
 
